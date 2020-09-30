@@ -13,6 +13,7 @@ window.onload = function() {
     var editingProfile = false;
     var pauseRendering = false;
     var lightGradient = true;
+    $('#help-modal').css("display", "block");
 
     loadProfiles();
     
@@ -485,6 +486,10 @@ window.onload = function() {
 
         loadFromProfileID = null;
     }
+
+    $('#help-modal-close').on("click", function() {
+        $('#help-modal').css("display", "none");
+    });
 
     /******************** Audio Controls ********************/
     /*$('.music-file-play').click(function() {
