@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <script src="./js/visualizer.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="./css/visualizer.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+  <!-- HEADER BAR -->
+  <body style="height: 100vh; width: 100vw; overflow: hidden;">
+    <div id="header-bar" style="padding: 10px 20px; min-width: 650px;">
+      <div class="wrapper header-wrapper" id="left-header-bar">
+        <div class="col-md header-column">
+          <h1 style="margin-top: 10px;">Bronson Beat Factory</h1>
+        </div>
+        <div class="col-md header-column" id="resolution-column" style="display: flex; align-items: center;">
+          <span id="change-resolution" class="glyphicon glyphicon-stats" style="cursor: pointer; font-size: 150%; margin: 10px;"></span>
+          <div id="resolution-wrapper">
+            <input id="visualizer-resolution" type="range" min="5" max="15" value="11"></input>
+          </div>
+        </div>
+        <div class="col-md header-column" id="spacing-column" style="display: flex; align-items: center;">
+          <span id="change-spacing" class="glyphicon glyphicon-resize-horizontal" style="cursor: pointer; font-size: 150%; margin: 10px;"></span>
+          <div id="spacing-wrapper">
+            <input id="visualizer-spacing" type="range" min="0" max="10" value="0"></input>
+          </div>
+        </div>
+      </div>
+      <div class="wrapper header-wrapper" id="right-header-bar">
+        <div class="col-md header-column" id="file-picker">
+          <label for="audiofile" class="glyphicon glyphicon-file" style="cursor: pointer; font-size: 200%;"></label>
+          <input type="file" id="audiofile" accept="audio/*" style="opacity: 0; z-index: -1; width: 0px; height: 0px; margin: 0px;"/>
+        </div>
+        <div class="col-md header-column" id="colorpicker-toggle">
+          <img src="./assets/color wheel.jpg" style="height: 40px; width: 40px; margin: 10px;">
+        </div>
+      </div>
+    </div>
+    <!-- END HEADER BAR -->
+    
+    <!-- COLOR PICKER (SIDE BAR) -->
+    <div id="colorpicker">
+      <div class="sidebar-header" style="padding: 0px 15px;">
+        <h2>Color Picker</h2>
+      </div>
+      <div class="container" style="width: 100%; background-color: #fefeff;">
+        <div class="row-md color-row-input">
+          <h4>Lows: </h4>
+          <div class="color-input-wrapper" id="low-color-input-wrapper" style="background-color: #FF0000;">
+            <input class="color-input" id="low-color-picker" type="color" value="#FF0000"/>
+          </div>
+        </div>
+        <div class="row-md color-row-input">
+          <h4>Highs: </h4>
+          <div class="color-input-wrapper" id="high-color-input-wrapper" style="background-color: #00FF00;">
+            <input class="color-input" id="high-color-picker" type="color" value="#00FF00"/>
+          </div>
+        </div>
+        <div class="row-md color-row-input">
+          <h4>Undertones: </h4>
+          <div class="color-input-wrapper" id="undertone-color-input-wrapper" style="background-color: #0000FF;">
+            <input class="color-input" id="undertone-color-picker" type="color" value="#0000FF"/>
+          </div>
+        </div>
+        <div class="row-md color-row-input">
+          <div style="display: flex; align-items: center;">
+            <h4 style="margin-right: 5px;">Background: </h4>
+            <button type="button" class="btn btn-sm btn-light" id="gradient-button-dark" style="margin: 0px 5px;">Dark</button>
+            <button type="button" class="btn btn-sm btn-primary" id="gradient-button-light" style="margin: 0px 5px;">Light</button>
+          </div>
+          <div class="color-input-wrapper" id="background-color-input-wrapper" style="background-color: #000000;">
+            <input class="color-input" id="background-color-picker" type="color" value="#000000"/>
+          </div>
+        </div>
+        <div class="row-md">
+          <button type="button" class="btn btn-primary" id="color-profile-random-button" style="margin: 8px 0px; width: 100%;">Randomize Colors</button>
+        </div>
+      </div>
+      <div class="sidebar-header" style="padding: 0px 15px;">
+        <h3>Color Profiles</h3>
+      </div>
+      <div class="container" style="width: 100%; background-color: #fefeff;">
+        <button type="button" class="btn btn-primary" id="color-profile-save-button" style="margin: 8px 0px; width: 100%;"><span class="glyphicon glyphicon-floppy-disk"></span> Save Profile</button>
+        <button type="button" class="btn btn-light" id="color-profile-edit-button" style="margin: 8px 0px; width: 100%;"><span class="glyphicon glyphicon-edit"></span> Edit Profile</button>
+        <button type="button" class="btn btn-light" id="color-profile-delete-button" style="margin: 8px 0px; width: 100%;"><span class="glyphicon glyphicon-trash"></span> Delete Profile</button>
+        <div class="container" id="color-profile-container">
+        </div>
+      </div>
+    </div>
+    <!-- END COLOR PICKER -->
+
+    <!-- MAIN WINDOW -->
+    <div id="visualizer" style="width: 100vw; height: 77.25vh;">
+      <canvas id="canvas"></canvas>
+    </div>
+    <!-- END MAIN WINDOW -->
+
+    <!-- FOOTER BAR -->
+    <div class="container" id="footer-bar">
+      <audio id="audio" style="opacity: 0; width: 0;"></audio>
+      <div class="controls">
+        <div id="play-skip" style="margin: 10px 5px 10px 10px; width: 81px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;">
+          <span id="music-previous" class="glyphicon glyphicon-step-backward"></span>
+          <span id="music-play" class="glyphicon glyphicon-play"></span>
+          <span id="music-next" class="glyphicon glyphicon-step-forward"></span>
+        </div>
+        <div id="volume-control-wrapper" style="font-size: 21px; display: flex; align-items: center; margin-right: 5px;">
+          <span id="music-change-volume" class="glyphicon" style="margin: 3px 0px 0px 3px;"></span>
+          <div id="music-volume-control">
+            <input id="music-volume-control-slider" type="range" min=0 max=1 step="0.05"></input>
+          </div>
+        </div>
+        <div id="music-time" style="margin: 10px 20px 10px 5px; width: 100%; display: flex; align-items: center; justify-content: space-between;">
+          <span id="music-numeric-time" style="width: 20%;"><span id="music-current-time">0:00</span> / <span id="music-total-time">0:00</span></span>
+          <input id="music-progress-slider" type="range" min="0" step="1" style="width: 80%; float: right;"></input>
+        </div>
+      </div>
+      <div id="music-song">
+        <div id="current-song" style="border-left: 1px solid #888888;">
+          <div id="current-song-art" style="font-size: 30px; margin: 5px;">
+            <span class="glyphicon glyphicon-music"></span>
+          </div>
+          <div id="current-song-name">
+            <h5 style="margin: 0px;">Now Playing...</h5>
+          </div>
+        </div>
+        <div id="next-song" style="border-left: 1px solid #888888;">
+          <div id="next-song-art" style="font-size: 30px; margin: 5px;">
+            <span class="glyphicon glyphicon-music"></span>
+          </div>
+          <div id="next-song-name">
+            <h5 style="margin: 0px;">Up Next...</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END FOOTER BAR -->
+
+    <!-- MODALS -->
+    <div id="save-profile-modal" class="modal">
+      <div class="modal-content">
+          <span class="modal-close" id="save-profile-modal-close">&times;</span>
+        <div class="modal-header" id="save-profile-modal-header" style="border-bottom: 0px;">
+          <h2 style="margin: 10px;">Profile Name: </h2>
+          <input type="text" placeholder=" " id="save-profile-name" style="height: 30px; margin: 10px;"/>
+        </div>
+        <div class="modal-body" id="save-profile-modal-body" style="padding: 0px 15px; border-bottom: 1px solid #888888; border-top: 1px solid #888888;">
+          <div class="row-md color-row-save">
+            <h4>Lows: </h4>
+            <div class="color-input color-input-wrapper" id="low-color-save-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+          <div class="row-md color-row-save">
+            <h4>Highs: </h4>
+            <div class="color-input color-input-wrapper" id="high-color-save-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+          <div class="row-md color-row-save">
+            <h4>Undertones: </h4>
+            <div class="color-input color-input-wrapper" id="undertone-color-save-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+          <div class="row-md color-row-save">
+            <h4>Background: </h4>
+            <div class="color-input color-input-wrapper" id="background-color-save-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" id="save-profile-modal-footer">
+          <button class="btn btn-primary" id="save-profile-button" style="width: 100%;"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="edit-profile-modal" class="modal">
+      <div class="modal-content">
+          <span class="modal-close" id="edit-profile-modal-close">&times;</span>
+        <div class="modal-header" id="edit-profile-modal-header" style="border-bottom: 0px;">
+            <h2 style="margin: 10px;">Edit Profile</h2>
+            <h2 id="edit-profile-name" style="margin: 10px 0px;"></h2>
+        </div>
+        <div class="modal-body" id="edit-profile-modal-body" style="padding: 0px 15px; border-bottom: 1px solid #888888; border-top: 1px solid #888888;">
+            <div class="row-md color-row-edit">
+              <h4>Lows: </h4>
+              <div class="color-input color-input-wrapper" id="low-color-edit-wrapper" style="opacity: 1;">
+              </div>
+            </div>
+            <div class="row-md color-row-edit">
+              <h4>Highs: </h4>
+              <div class="color-input color-input-wrapper" id="high-color-edit-wrapper" style="opacity: 1;">
+              </div>
+            </div>
+            <div class="row-md color-row-edit">
+              <h4>Undertones: </h4>
+              <div class="color-input color-input-wrapper" id="undertone-color-edit-wrapper" style="opacity: 1;">
+              </div>
+            </div>
+            <div class="row-md color-row-edit">
+              <h4>Background: </h4>
+              <div class="color-input color-input-wrapper" id="background-color-edit-wrapper" style="opacity: 1;">
+              </div>
+            </div>
+          </div>
+        <div class="modal-footer" id="edit-profile-modal-footer" style="display: flex;">
+          <button class="btn btn-primary" id="edit-profile-button" style="margin: 0% 5%; width: 40%;"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+          <button class="btn btn-light" id="cancel-edit-profile-button" style="margin: 0% 5%; width: 40%;"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="delete-profile-modal" class="modal">
+      <div class="modal-content">
+          <span class="modal-close" id="delete-profile-modal-close">&times;</span>
+        <div class="modal-header" id="delete-profile-modal-header" style="border-bottom: 0px;">
+          <h2 style="margin: 10px;">Delete Profile</h2>
+          <h2 id="delete-profile-name" style="margin: 10px 0px;"></h2>
+          <h2 style="margin: 10px;">?</h2>
+        </div>
+        <div class="modal-body" id="delete-profile-modal-body" style="padding: 0px 15px; border-bottom: 1px solid #888888; border-top: 1px solid #888888;">
+          <div class="row-md color-row-delete">
+            <h4>Lows: </h4>
+            <div class="color-input color-input-wrapper" id="low-color-delete-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+          <div class="row-md color-row-delete">
+            <h4>Highs: </h4>
+            <div class="color-input color-input-wrapper" id="high-color-delete-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+          <div class="row-md color-row-delete">
+            <h4>Undertones: </h4>
+            <div class="color-input color-input-wrapper" id="undertone-color-delete-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+          <div class="row-md color-row-delete">
+            <h4>Background: </h4>
+            <div class="color-input color-input-wrapper" id="background-color-delete-wrapper" style="opacity: 1;">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" id="delete-profile-modal-footer" style="display: flex;">
+          <button class="btn btn-primary" id="delete-profile-button" style="margin: 0% 5%; width: 40%;"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+          <button class="btn btn-light" id="cancel-delete-profile-button" style="margin: 0% 5%; width: 40%;"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="help-modal" class="modal">
+      <div class="modal-content">
+          <span class="modal-close" id="help-modal-close">&times;</span>
+        <div class="modal-header" id="help-modal-header" style="border-bottom: 0px;">
+          <h2 style="margin: 10px;">Click the file icon in the top right to select an audio file to visualize :)</h2>
+        </div>
+      </div>
+    </div>
+    <!-- END MODALS -->
+
+  </body>
+</html>
